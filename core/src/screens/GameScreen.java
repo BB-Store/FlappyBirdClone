@@ -70,9 +70,21 @@ public class GameScreen implements Screen {
 
                 tube.reposition(tube.getPosTubeTop().x + (Tube.Tube_Width + Tube_Space) * Tube_Count);
             }
+            if(tube.collides(bird.getBounds())){
+                gameOver();
+            }
+        }
+
+        //Check oberhalb des Bodens
+        if(bird.getPosition().y <= 0) {
+            gameOver();
         }
 
         camera.update();
+    }
+
+    private void gameOver() {
+        game.setScreen(new GameScreen(game));
     }
 
     private void handleInput() {

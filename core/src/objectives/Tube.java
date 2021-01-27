@@ -1,6 +1,7 @@
 package objectives;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -18,17 +19,23 @@ public class Tube implements Disposable {
     private Vector2 posTubeTop, posTubeBottom;
     private Random random;
 
+    private Rectangle boundsTop, boundsBottom;
+
     public Tube(float x) {
         tubeTop = new Texture("PipeDown.png");
         tubeBottom = new Texture("PipeUp.png");
         random = new Random();
         posTubeTop = new Vector2(x, random.nextInt(Fluctuation) + Tube_Gap + Lowest_Opening);
         posTubeBottom = new Vector2(x, posTubeTop.y - Tube_Gap - Tube_Height);
+        boundsTop = new Rectangle(posTubeTop.x, posTubeTop.y, Tube_Width, Tube_Height);
+        boundsBottom = new Rectangle(posTubeBottom.x, posTubeBottom.y, Tube_Width, Tube_Height);
     }
 
     public void reposition(float x) {
         posTubeTop.set(x, random.nextInt(Fluctuation)+ Tube_Gap +Lowest_Opening);
         posTubeBottom = new Vector2(x, posTubeTop.y - Tube_Gap - Tube_Height);
+        boundsTop.setPosition(posTubeTop.x, posTubeTop.y);
+        boundsBottom.setPosition(posTubeBottom.x, posTubeBottom.y);
     }
 
     public Texture getTubeTop() {
@@ -45,6 +52,10 @@ public class Tube implements Disposable {
 
     public Vector2 getPosTubeBottom() {
         return posTubeBottom;
+    }
+
+    public boolean collides(Rectangle bird){
+        return bird.overlaps(boundsTop) || bird.overlaps(boundsBottom);
     }
 
     @Override

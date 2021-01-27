@@ -1,6 +1,7 @@
 package objectives;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 
@@ -12,11 +13,13 @@ public class Bird implements Disposable {
     private Vector2 velocity;
     private int size = 50;
     private Texture texture;
+    private Rectangle bounds;
 
     public Bird(int x, int y){
         position = new Vector2(x, y);
         velocity = new Vector2(0, 0);
         texture = new Texture("bird.png");
+        bounds = new Rectangle(x, y, size, size);
     }
 
     public void update(float dt){
@@ -30,6 +33,11 @@ public class Bird implements Disposable {
         }
 
         velocity.scl(1/dt);
+        bounds.setPosition(position.x, position.y);
+    }
+
+    public Rectangle getBounds() {
+        return bounds;
     }
 
     public void jump () {

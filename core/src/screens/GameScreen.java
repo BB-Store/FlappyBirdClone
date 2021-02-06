@@ -6,9 +6,16 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import de.tutorial.flappybird.clone.Mainactivity;
 import objectives.Bird;
@@ -29,6 +36,10 @@ public class GameScreen implements Screen {
     private Texture test;
     private Texture ground;
     private Vector2 groundPos1, groundPos2;
+    private Stage stage;
+    private int score;
+    private Label lblScore;
+    private Label.LabelStyle skin;
 
 
     public GameScreen(Mainactivity game) {
@@ -44,9 +55,32 @@ public class GameScreen implements Screen {
         groundPos1 = new Vector2(camera.position.x - camera.viewportWidth/2, Ground_Offset);
         groundPos2 = new Vector2((camera.position.x - camera.viewportWidth/2) + Ground_Width, Ground_Offset);
 
+        stage = new Stage(new StretchViewport(Mainactivity.Width, Mainactivity.Height));
+        skin = new Label.LabelStyle();
+        skin.font = new BitmapFont(Gdx.files.internal("skin.fnt"), Gdx.files.internal("skin.png"), false);
+
         for(int i = 1; i <= Tube_Count; i++){
             tubes.add(new Tube(100 + i *(Tube_Space + Tube.Tube_Width)));
         }
+
+        rebuildStage();
+    }
+
+    private void rebuildStage() {
+        stage.clear();
+        Stack stack = new Stack();
+        stack.setSize(Mainactivity.Width, Mainactivity.Height);
+        stage.addActor(stack);
+        stack.add(addScoreLabel());
+    }
+
+
+    private Table addScoreLabel() {
+        Table layer = new Table();
+        layer.top();
+        lblScore = new Label("" + Integer.toString(score), skin);
+        layer.add(lblScore);
+        return layer;
     }
 
     @Override
@@ -72,6 +106,9 @@ public class GameScreen implements Screen {
         batch.draw(ground, groundPos1.x, groundPos1.y, Ground_Width, Ground_Height);
         batch.draw(ground, groundPos2.x, groundPos2.y, Ground_Width, Ground_Height);
         batch.end();
+
+        stage.act(delta);
+        stage.draw();
     }
 
     private void update(float delta) {
@@ -84,8 +121,8 @@ public class GameScreen implements Screen {
             Tube tube = tubes.get(i);
 
             if(camera.position.x - camera.viewportWidth * 0.5f > tube.getPosTubeTop().x + Tube.Tube_Width){
-
-                //1 Punkt + Soundeffekt
+                score++;
+                // + Soundeffekt
 
                 tube.reposition(tube.getPosTubeTop().x + (Tube.Tube_Width + Tube_Space) * Tube_Count);
             }
@@ -99,6 +136,7 @@ public class GameScreen implements Screen {
             gameOver();
         }
 
+        rebuildStage();
         camera.update();
     }
 
@@ -149,5 +187,7 @@ public class GameScreen implements Screen {
         }
         test.dispose();
         ground.dispose();
+        skin.font.dispose();
+        stage.dispose();
     }
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import de.tutorial.flappybird.clone.Mainactivity;
@@ -17,13 +18,17 @@ public class GameScreen implements Screen {
 
     private static final int Tube_Count = 4;
     private static final int Tube_Space = 145;
-    private static final int GroundYOffset = -80;
+    private static final int Ground_Offset = -80;
+    private static final int Ground_Width = 350;
+    private static final int Ground_Height = 122;
     private Mainactivity game;
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private Bird bird;
     private Array<Tube> tubes;
     private Texture test;
+    private Texture ground;
+    private Vector2 groundPos1, groundPos2;
 
 
     public GameScreen(Mainactivity game) {
@@ -34,6 +39,10 @@ public class GameScreen implements Screen {
         bird = new Bird(50, 250);
         tubes = new Array<Tube>();
         test = new Texture(Gdx.files.internal("test.png"));
+
+        ground = new Texture(Gdx.files.internal("ground.png"));
+        groundPos1 = new Vector2(camera.position.x - camera.viewportWidth/2, Ground_Offset);
+        groundPos2 = new Vector2((camera.position.x - camera.viewportWidth/2) + Ground_Width, Ground_Offset);
 
         for(int i = 1; i <= Tube_Count; i++){
             tubes.add(new Tube(100 + i *(Tube_Space + Tube.Tube_Width)));
@@ -53,17 +62,21 @@ public class GameScreen implements Screen {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(test, bird.getBounds().x, bird.getBounds().y, bird.getBounds().getWidth(), bird.getBounds().getHeight());
+        //batch.draw(test, bird.getBounds().x, bird.getBounds().y, bird.getBounds().getWidth(), bird.getBounds().getHeight());
         batch.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, bird.getSize(), bird.getSize());
         for (Tube tube : tubes){
             batch.draw(tube.getTubeTop(), tube.getPosTubeTop().x, tube.getPosTubeTop().y, Tube.Tube_Width, Tube.Tube_Height);
             batch.draw(tube.getTubeBottom(), tube.getPosTubeBottom().x, tube.getPosTubeBottom().y, Tube.Tube_Width, Tube.Tube_Height);
         }
+
+        batch.draw(ground, groundPos1.x, groundPos1.y, Ground_Width, Ground_Height);
+        batch.draw(ground, groundPos2.x, groundPos2.y, Ground_Width, Ground_Height);
         batch.end();
     }
 
     private void update(float delta) {
         handleInput();
+        updateGround();
         bird.update(delta);
         camera.position.x = bird.getPosition().x + 80;
 
@@ -82,7 +95,7 @@ public class GameScreen implements Screen {
         }
 
         //Check oberhalb des Bodens
-        if(bird.getPosition().y <= 0) {
+        if(bird.getPosition().y +15 <= (Ground_Height + Ground_Offset)) {
             gameOver();
         }
 
@@ -96,6 +109,15 @@ public class GameScreen implements Screen {
     private void handleInput() {
         if(Gdx.input.justTouched()){
             bird.jump();
+        }
+    }
+
+    private void updateGround(){
+        if(camera.position.x - (camera.viewportWidth/2) > groundPos1.x + Ground_Width){
+            groundPos1.add(Ground_Width*2, 0);
+        }
+        if(camera.position.x - (camera.viewportWidth/2) > groundPos2.x + Ground_Width){
+            groundPos2.add(Ground_Width*2, 0);
         }
     }
 
@@ -126,5 +148,6 @@ public class GameScreen implements Screen {
             tube.dispose();
         }
         test.dispose();
+        ground.dispose();
     }
 }

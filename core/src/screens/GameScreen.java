@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 
@@ -16,11 +17,14 @@ public class GameScreen implements Screen {
 
     private static final int Tube_Count = 4;
     private static final int Tube_Space = 145;
+    private static final int GroundYOffset = -80;
     private Mainactivity game;
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private Bird bird;
     private Array<Tube> tubes;
+    private Texture test;
+
 
     public GameScreen(Mainactivity game) {
         this.game = game;
@@ -29,6 +33,7 @@ public class GameScreen implements Screen {
         batch = new SpriteBatch();
         bird = new Bird(50, 250);
         tubes = new Array<Tube>();
+        test = new Texture(Gdx.files.internal("test.png"));
 
         for(int i = 1; i <= Tube_Count; i++){
             tubes.add(new Tube(100 + i *(Tube_Space + Tube.Tube_Width)));
@@ -48,6 +53,7 @@ public class GameScreen implements Screen {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+        batch.draw(test, bird.getBounds().x, bird.getBounds().y, bird.getBounds().getWidth(), bird.getBounds().getHeight());
         batch.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, bird.getSize(), bird.getSize());
         for (Tube tube : tubes){
             batch.draw(tube.getTubeTop(), tube.getPosTubeTop().x, tube.getPosTubeTop().y, Tube.Tube_Width, Tube.Tube_Height);
@@ -119,5 +125,6 @@ public class GameScreen implements Screen {
         for (Tube tube : tubes){
             tube.dispose();
         }
+        test.dispose();
     }
 }

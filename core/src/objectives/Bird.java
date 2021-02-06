@@ -16,13 +16,15 @@ public class Bird implements Disposable {
     private Texture texture;
     private Rectangle bounds;
     private Animator animation;
+    private int offsetX = 5;
+    private int offsetY = 10;
 
     public Bird(int x, int y){
         position = new Vector2(x, y);
         velocity = new Vector2(0, 0);
         texture = new Texture("bird.png");
         animation = new Animator(new TextureRegion(texture), 5, 0.5f);
-        bounds = new Rectangle(x, y, size, size);
+        bounds = new Rectangle(x + offsetX, y+ offsetY, size -offsetX, size - offsetY);
     }
 
     public void update(float dt){
@@ -37,7 +39,7 @@ public class Bird implements Disposable {
         }
 
         velocity.scl(1/dt);
-        bounds.setPosition(position.x, position.y);
+        bounds.setPosition(position.x + offsetX, position.y +offsetY);
     }
 
     private void animationUpdate(float dt) {

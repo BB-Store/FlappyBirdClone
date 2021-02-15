@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import de.tutorial.flappybird.clone.Mainactivity;
 import objectives.Bird;
+import objectives.Clouds;
 import objectives.Mountain;
 import objectives.Tube;
 
@@ -42,6 +43,7 @@ public class GameScreen implements Screen {
     private Label lblScore;
     private Label.LabelStyle skin;
     private Mountain mountain;
+    private Clouds clouds;
 
 
     public GameScreen(Mainactivity game) {
@@ -66,6 +68,7 @@ public class GameScreen implements Screen {
         }
 
         mountain = new Mountain();
+        clouds = new Clouds(camera.position.x);
 
         rebuildStage();
     }
@@ -103,6 +106,9 @@ public class GameScreen implements Screen {
         mountain.render(batch);
         //batch.draw(test, bird.getBounds().x, bird.getBounds().y, bird.getBounds().getWidth(), bird.getBounds().getHeight());
         batch.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, bird.getSize(), bird.getSize());
+
+        clouds.render(batch);
+
         for (Tube tube : tubes){
             batch.draw(tube.getTubeTop(), tube.getPosTubeTop().x, tube.getPosTubeTop().y, Tube.Tube_Width, Tube.Tube_Height);
             batch.draw(tube.getTubeBottom(), tube.getPosTubeBottom().x, tube.getPosTubeBottom().y, Tube.Tube_Width, Tube.Tube_Height);
@@ -119,7 +125,9 @@ public class GameScreen implements Screen {
     private void update(float delta) {
         handleInput();
         updateGround();
+
         mountain.update(camera.position.x - (camera.viewportWidth/ 2));
+        clouds.update(delta, camera.position.x, camera.viewportWidth);
         bird.update(delta);
         camera.position.x = bird.getPosition().x + 80;
 

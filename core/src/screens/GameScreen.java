@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import de.tutorial.flappybird.clone.Mainactivity;
 import objectives.Bird;
+import objectives.Mountain;
 import objectives.Tube;
 
 public class GameScreen implements Screen {
@@ -40,6 +41,7 @@ public class GameScreen implements Screen {
     private int score;
     private Label lblScore;
     private Label.LabelStyle skin;
+    private Mountain mountain;
 
 
     public GameScreen(Mainactivity game) {
@@ -62,6 +64,8 @@ public class GameScreen implements Screen {
         for(int i = 1; i <= Tube_Count; i++){
             tubes.add(new Tube(100 + i *(Tube_Space + Tube.Tube_Width)));
         }
+
+        mountain = new Mountain();
 
         rebuildStage();
     }
@@ -96,6 +100,7 @@ public class GameScreen implements Screen {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+        mountain.render(batch);
         //batch.draw(test, bird.getBounds().x, bird.getBounds().y, bird.getBounds().getWidth(), bird.getBounds().getHeight());
         batch.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y, bird.getSize(), bird.getSize());
         for (Tube tube : tubes){
@@ -114,6 +119,7 @@ public class GameScreen implements Screen {
     private void update(float delta) {
         handleInput();
         updateGround();
+        mountain.update(camera.position.x - (camera.viewportWidth/ 2));
         bird.update(delta);
         camera.position.x = bird.getPosition().x + 80;
 
@@ -189,5 +195,6 @@ public class GameScreen implements Screen {
         ground.dispose();
         skin.font.dispose();
         stage.dispose();
+        mountain.dispose();
     }
 }

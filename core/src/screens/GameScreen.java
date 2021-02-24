@@ -8,12 +8,18 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
@@ -44,6 +50,11 @@ public class GameScreen implements Screen {
     private Label.LabelStyle skin;
     private Mountain mountain;
     private Clouds clouds;
+    private boolean isGameOver;
+    private Button btnMenu;
+    private Label lblScoreGameOver;
+    private Label lblGameOver;
+    private boolean doStageBuild;
 
 
     public GameScreen(Mainactivity game) {
@@ -70,6 +81,9 @@ public class GameScreen implements Screen {
         mountain = new Mountain();
         clouds = new Clouds(camera.position.x);
 
+        isGameOver = false;
+        doStageBuild = true;
+
         rebuildStage();
     }
 
@@ -78,7 +92,54 @@ public class GameScreen implements Screen {
         Stack stack = new Stack();
         stack.setSize(Mainactivity.Width, Mainactivity.Height);
         stage.addActor(stack);
-        stack.add(addScoreLabel());
+        if(!isGameOver){
+            stack.add(addScoreLabel());
+        }else {
+            Gdx.input.setInputProcessor(stage);
+            stack.add(gameOverScreenText());
+            stack.add(menuButton());
+            AnimateGameOverScreen();
+            doStageBuild = false;
+        }
+
+    }
+
+    private void AnimateGameOverScreen() {
+        lblScoreGameOver.addAction(Actions.moveBy(0, 275, 1.5f));
+        lblGameOver.addAction(Actions.moveBy(0, -275, 1.5f));
+        btnMenu.addAction(Actions.sequence(
+                Actions.moveBy(-340, 0, 2.25f, Interpolation.swing),
+                Actions.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnMenu.addListener(new ChangeListener() {
+                            @Override
+                            public void changed(ChangeEvent event, Actor actor) {
+                                game.setScreen(new GameScreen(game));
+                            }
+                        });
+                    }
+                })
+        ));
+    }
+
+    private Table menuButton() {
+        Table layer = new Table();
+        layer.center();
+        btnMenu = new Button(new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("restart.png")))));
+        layer.add(btnMenu).width(200).height(250).padLeft(680);
+        return layer;
+    }
+
+    private Table gameOverScreenText() {
+        Table layer = new Table();
+        lblGameOver = new Label("Game Over", skin);
+        layer.add(lblGameOver).padBottom(900);
+        layer.row();
+
+        lblScoreGameOver = new Label("Score: " + Integer.toString(score), skin);
+        layer.add(lblScoreGameOver);
+        return layer;
     }
 
 
@@ -150,16 +211,17 @@ public class GameScreen implements Screen {
             gameOver();
         }
 
-        rebuildStage();
+
+        if(doStageBuild)rebuildStage();
         camera.update();
     }
 
     private void gameOver() {
-        game.setScreen(new GameScreen(game));
+        isGameOver = true;
     }
 
     private void handleInput() {
-        if(Gdx.input.justTouched()){
+        if(Gdx.input.justTouched() && !isGameOver){
             bird.jump();
         }
     }

@@ -2,6 +2,7 @@ package screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -55,6 +56,7 @@ public class GameScreen implements Screen {
     private Label lblScoreGameOver;
     private Label lblGameOver;
     private boolean doStageBuild;
+    private Sound hit, fly, point;
 
 
     public GameScreen(Mainactivity game) {
@@ -84,6 +86,9 @@ public class GameScreen implements Screen {
         isGameOver = false;
         doStageBuild = true;
 
+        hit = Gdx.audio.newSound(Gdx.files.internal("hit.wav"));
+        point = Gdx.audio.newSound(Gdx.files.internal("point.wav"));
+        fly = Gdx.audio.newSound(Gdx.files.internal("fly.wav"));
         rebuildStage();
     }
 
@@ -102,6 +107,10 @@ public class GameScreen implements Screen {
             doStageBuild = false;
         }
 
+    }
+
+    private void PlaySound(Sound sound, float volume){
+        if(!isGameOver) sound.play(volume);
     }
 
     private void AnimateGameOverScreen() {
@@ -197,7 +206,7 @@ public class GameScreen implements Screen {
 
             if(camera.position.x - camera.viewportWidth * 0.5f > tube.getPosTubeTop().x + Tube.Tube_Width){
                 score++;
-                // + Soundeffekt
+                PlaySound(point, 0.4f);
 
                 tube.reposition(tube.getPosTubeTop().x + (Tube.Tube_Width + Tube_Space) * Tube_Count);
             }
@@ -217,12 +226,15 @@ public class GameScreen implements Screen {
     }
 
     private void gameOver() {
+        PlaySound(hit, 0.4f);
         isGameOver = true;
+
     }
 
     private void handleInput() {
         if(Gdx.input.justTouched() && !isGameOver){
             bird.jump();
+            PlaySound(fly, 0.6f);
         }
     }
 
@@ -266,5 +278,8 @@ public class GameScreen implements Screen {
         skin.font.dispose();
         stage.dispose();
         mountain.dispose();
+        hit.dispose();
+        fly.dispose();
+        point.dispose();
     }
 }

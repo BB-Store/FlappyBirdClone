@@ -124,7 +124,7 @@ public class GameScreen implements Screen {
                         btnMenu.addListener(new ChangeListener() {
                             @Override
                             public void changed(ChangeEvent event, Actor actor) {
-                                game.setScreen(new GameScreen(game));
+                                game.setScreen(new MenuScreen(game, score));
                             }
                         });
                     }

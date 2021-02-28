@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import screens.GameScreen;
+import screens.MenuScreen;
 
 public class Mainactivity extends Game {
 
@@ -16,7 +17,7 @@ public class Mainactivity extends Game {
 
 	@Override
 	public void create () {
-		setScreen(new GameScreen(this));
+		setScreen(new MenuScreen(this, 0));
 	}
 
 }

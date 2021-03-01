@@ -18,7 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 
-
+import de.tutorial.flappybird.clone.GamePreferences;
 import de.tutorial.flappybird.clone.Mainactivity;
 
 public class MenuScreen implements Screen {
@@ -36,11 +36,26 @@ public class MenuScreen implements Screen {
         skin.font = new BitmapFont(Gdx.files.internal("skin.fnt"), Gdx.files.internal("skin.png"), false);
         Gdx.input.setInputProcessor(stage);
 
+        loadSettings();
         if(score > highscore){
             highscore = score;
+            saveSettings();
+            loadSettings();
         }
 
         rebuildStage();
+    }
+
+    private void saveSettings() {
+        GamePreferences prefs = GamePreferences.instance;
+        prefs.highscore = highscore;
+        prefs.save();
+    }
+
+    private void loadSettings() {
+        GamePreferences prefs = GamePreferences.instance;
+        prefs.load();
+        highscore = prefs.highscore;
     }
 
     private void rebuildStage() {

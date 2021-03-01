@@ -205,7 +205,7 @@ public class GameScreen implements Screen {
             Tube tube = tubes.get(i);
 
             if(camera.position.x - camera.viewportWidth * 0.5f > tube.getPosTubeTop().x + Tube.Tube_Width){
-                score++;
+                if(!isGameOver)score++;
                 PlaySound(point, 0.4f);
 
                 tube.reposition(tube.getPosTubeTop().x + (Tube.Tube_Width + Tube_Space) * Tube_Count);

@@ -47,19 +47,19 @@ public class Mountain implements Disposable {
             positionMountainFront1.add(2000, 0);
         }
         else if(position.x * 0.7f > (positionMountainFront2.x + width)){
-            positionMountainFront1.add(2000, 0);
+            positionMountainFront2.add(2000, 0);
         }
         else if(position.x * 0.5f > (positionMountainMiddle1.x + width)){
-            positionMountainFront1.add(2000, 0);
+            positionMountainMiddle1.add(2000, 0);
         }
         else if(position.x * 0.5f > (positionMountainMiddle2.x + width)){
-            positionMountainFront1.add(2000, 0);
+            positionMountainMiddle2.add(2000, 0);
         }
         else if(position.x * 0.2f > (positionMountainBack1.x + width)){
-            positionMountainFront1.add(2000, 0);
+            positionMountainBack1.add(2000, 0);
         }
         else if(position.x * 0.2f > (positionMountainBack2.x + width)){
-            positionMountainFront1.add(2000, 0);
+            positionMountainBack2.add(2000, 0);
         }
     }
 
